@@ -6,7 +6,7 @@
 /*   By: hosokawa <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 15:14:34 by hosokawa          #+#    #+#             */
-/*   Updated: 2024/11/25 15:21:01 by hosokawa         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:24:44 by hosokawa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ int	main(void)
   	Fixed c;
 
 	c = b;
- 	std::cout << a.getRawBit() << std::endl;
- 	std::cout << b.getRawBit() << std::endl;
- 	std::cout << c.getRawBit() << std::endl;
+ 	std::cout << a.getRawBits() << std::endl;
+ 	std::cout << b.getRawBits() << std::endl;
+ 	std::cout << c.getRawBits() << std::endl;
 
 	return (0);
 

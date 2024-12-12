@@ -6,14 +6,13 @@
 /*   By: hosokawa <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 13:48:47 by hosokawa          #+#    #+#             */
-/*   Updated: 2024/11/26 14:45:03 by hosokawa         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:32:39 by hosokawa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FIXED_HPP
 #define FIXED_HPP
 
-#define F_FILED 8
 
 #include <string>
 #include <iostream>
@@ -22,8 +21,8 @@
 class Fixed
 {
 	private:
-		int rawBit;
-		const static int fractionalBit=F_FILED;
+		int rawBits;
+		const static int fractionalBits;
 	public:
 		Fixed();
 		Fixed(const int i);
@@ -31,8 +30,8 @@ class Fixed
 		Fixed(const Fixed& origin);
 		Fixed& operator=(const Fixed &origin);
 		~Fixed();
-		int getRawBit(void)const ;
-		void setRawBit(int const raw);
+		int getRawBits(void)const ;
+		void setRawBits(int const raw);
 		int toInt(void)const;
 		float toFloat(void)const;
 
