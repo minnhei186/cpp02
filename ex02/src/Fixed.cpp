@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   Fixed.cpp                                          :+:      :+:    :+:   */
@@ -6,63 +6,51 @@
 /*   By: hosokawa <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 14:24:32 by hosokawa          #+#    #+#             */
-/*   Updated: 2024/12/11 11:04:34 by hosokawa         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:19:52 by hosokawa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Fixed.hpp"
 
-const int Fixed::fractionalBit = 8;
+const int Fixed::fractionalBits = 8;
 
-Fixed::Fixed() : rawBit(0)
-{
-	std::cout << "Default constructor called" << std::endl;
-}
+Fixed::Fixed() : rawBits(0)
+{}
 
-Fixed::Fixed(int i):rawBit(i<<fractionalBit)
-{
-	std::cout<<"Int constructor called"<<std::endl;
-}
+Fixed::Fixed(int i):rawBits(i<<fractionalBits)
+{}
 
-Fixed::Fixed(float f_i):rawBit(roundf(f_i*(1<<fractionalBit)))
-{
-	std::cout<<"Float constructor called"<<std::endl;
-}
+Fixed::Fixed(float f_i):rawBits(roundf(f_i*(1<<fractionalBits)))
+{}
 
 
 Fixed::Fixed(const Fixed& origin)
 {
-	std::cout << "Copy constructor called" << std::endl;
 	*this=origin;
 }
 
 Fixed::~Fixed()
-{
-	std::cout << "Destructor called" << std::endl;
-}
+{}
 
 
 Fixed& Fixed::operator=(const Fixed& origin)
 {
-	std::cout << "Copy assignment operator called " << std::endl;
 	if (this != &origin)
 	{
 
-		this->rawBit= origin.getRawBit();
+		this->rawBits= origin.getRawBits();
 	}
 	return (*this);
 }
 
-int Fixed::getRawBit(void) const 
+int Fixed::getRawBits(void) const 
 {
-	std::cout<<"getRawBits member function called"<<std::endl;
-	return this->rawBit;
+	return this->rawBits;
 }
 
-void Fixed::setRawBit(int const raw)
+void Fixed::setRawBits(int const raw)
 {
-	std::cout<<"setRawBits member function called"<<std::endl;
-	this->rawBit=raw;
+	this->rawBits=raw;
 }
 
 
@@ -70,12 +58,12 @@ void Fixed::setRawBit(int const raw)
 
 int Fixed::toInt(void)const
 {
-	return this->rawBit>>this->fractionalBit;
+	return this->rawBits>>this->fractionalBits;
 }
 
 float Fixed::toFloat(void)const
 {
-	return float(this->rawBit)/(1<<this->fractionalBit);
+	return float(this->rawBits)/(1<<this->fractionalBits);
 }
 
 std::ostream & operator<<( std::ostream & o, Fixed const & i ) 
@@ -89,32 +77,32 @@ std::ostream & operator<<( std::ostream & o, Fixed const & i )
 
 bool Fixed::operator>(const Fixed& origin)const
 {
-	return this->getRawBit()>origin.getRawBit();
+	return this->getRawBits()>origin.getRawBits();
 }
 
 bool Fixed::operator<(const Fixed& origin)const
 {
-	return this->getRawBit()<origin.getRawBit();
+	return this->getRawBits()<origin.getRawBits();
 }
 
 bool Fixed::operator>=(const Fixed& origin)const
 {
-	return this->getRawBit()>=origin.getRawBit();
+	return this->getRawBits()>=origin.getRawBits();
 }
 
 bool Fixed::operator<=(const Fixed& origin)const
 {
-	return this->getRawBit()<=origin.getRawBit();
+	return this->getRawBits()<=origin.getRawBits();
 }
 
 bool Fixed::operator==(const Fixed& origin)const
 {
-	return this->getRawBit()==origin.getRawBit();
+	return this->getRawBits()==origin.getRawBits();
 }
 
 bool Fixed::operator!=(const Fixed& origin)const
 {
-	return this->getRawBit()!=origin.getRawBit();
+	return this->getRawBits()!=origin.getRawBits();
 }
 
 //arithmetic_operators 
@@ -122,22 +110,27 @@ bool Fixed::operator!=(const Fixed& origin)const
 
 Fixed Fixed::operator+(const Fixed& origin)const
 {
-	return Fixed(this->toFloat+origin.toFloat);
+	return	Fixed(this->toFloat()+origin.toFloat());
 }
 
 Fixed Fixed::operator-(const Fixed& origin)const
 {
-	return Fixed(this->toFloat-origin.toFloat);
+	return	Fixed(this->toFloat()-origin.toFloat());
 }
 
 Fixed Fixed::operator*(const Fixed& origin)const
 {
-	return Fixed(this->toFloat*origin.toFloat);
+	return	Fixed(this->toFloat()*origin.toFloat());
 }
 
 Fixed Fixed::operator/(const Fixed& origin)const
 {
-	return Fixed(this->toFloat/origin.toFloat);
+	if(origin.toFloat()==0)
+	{
+		std::cout<<"Invalid 0 /"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
+	return	Fixed(this->toFloat()/origin.toFloat());
 }
 
 
@@ -145,40 +138,85 @@ Fixed Fixed::operator/(const Fixed& origin)const
 
 Fixed& Fixed::operator++(void)
 {
-	++this->rawBit;
+	int tmp;
+
+	tmp=this->rawBits;
+	++this->rawBits;
+	if(tmp>this->rawBits)
+	{
+		std::cout<<"Overflow"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
 	return *this;
 }
 
+//後置は一時メモリによって表現している。非常に面白い
 Fixed Fixed::operator++(int)
 {
 	Fixed tmp(*this);
-	tmp.rawBit=this->rawBit++;
+	tmp.rawBits=this->rawBits++;
+	if(tmp.rawBits>this->rawBits)
+	{
+		std::cout<<"Overflow"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
 	return tmp;
 }
 
 
 Fixed& Fixed::operator--(void)
 {
-	--this->rawBit;
+	int tmp;
+	tmp=this->rawBits;
+	--this->rawBits;
+	if(tmp<this->rawBits)
+	{
+		std::cout<<"Underflow"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
 	return *this;
 }
 
 Fixed Fixed::operator--(int)
 {
 	Fixed tmp(*this);
-	tmp.rawBit=this->rawBit--;
+	tmp.rawBits=this->rawBits--;
+	if(tmp.rawBits<this->rawBits)
+	{
+		std::cout<<"Underflow"<<std::endl;
+		exit(EXIT_FAILURE);
+	}
 	return tmp;
 }
 
 //max_min
+Fixed& Fixed::min(Fixed& a,Fixed& b)
+{
+	if(a.getRawBits()<b.getRawBits())
+		return a;
+	return b;
+}
 
+const Fixed& Fixed::min(const Fixed& a,const Fixed& b)
+{
+	if(a.getRawBits()<b.getRawBits())
+		return a;
+	return b;
+}
 
+Fixed& Fixed::max(Fixed& a,Fixed& b)
+{
+	if(a.getRawBits()>b.getRawBits())
+		return a;
+	return b;
+}
 
-
-
-
-
-
+const Fixed& Fixed::max(const Fixed& a,const Fixed& b)
+{
+	if(a.getRawBits()>b.getRawBits())
+		return a;
+	return b;
+}
 
 
 
